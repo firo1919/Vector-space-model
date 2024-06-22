@@ -10,56 +10,62 @@ import java.util.Map;
 import java.util.Set;
 
 public class Document {
-    private Map<String, Integer> file;
+    private Map<String, Integer> file = new HashMap<>();
     private int size;
     private String name;
     private BufferedReader reader;
 
     public Document(File text) {
         this.name = text.getName();
-        this.file = new HashMap<>();
+
         try {
             reader = new BufferedReader(new FileReader(text));
         } catch (FileNotFoundException e) {
-            System.out.println("ERROR OCCURED: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED WHILE READING FILE: >>>> "+e.getMessage());
         }
-        int i = 0;
         try {
             // Performing word tokenization with frequency of terms
+            System.out.println("READING FILE BEGAN...");
             while(reader.ready()){
-                System.out.println("READING ...");
                 String[] terms = reader.readLine().split(" ");
                 for (String term : terms) {
                     term = term.toLowerCase();
                     term = term.replace('.', ' ');
                     term = term.trim();
-                    // performing stop word removal
-                    if(!term.isEmpty()&&(!TextProcesser.isStopWord(term))){
+                    if(!term.isEmpty()){
                         file.put(term, file.getOrDefault(term,0)+1);
-                        i++;
                     }
                 }
             }
+            System.out.println("READING FILE ENDED ...");
+
         } catch (IOException e) {
-            System.out.println("ERROR OCCURED: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED DURING READING FILES: >>>> "+e.getMessage());
         }
-        this.size = i;
+        
+        //Removing stop words
+        TextProcesser.removeStopWord(this);
+        // performing stemming
+        TextProcesser.stemText(this);
     }
     
     public Document(String text) {
         this.name = "The Query";
-        this.file = new HashMap<>();  
         String[] terms = text.split(" ");
-        int j = 0;
+        
         for (int i = 0; i < terms.length; i++) {
             terms[i] = terms[i].toLowerCase();
-            if(!TextProcesser.isStopWord(terms[i])){
-                file.put(terms[i], file.getOrDefault(terms[i],0)+1);
-                j++;
-            }
+            terms[i] = terms[i].replace('.', ' ');
+            terms[i] = terms[i].trim();
+            file.put(terms[i], file.getOrDefault(terms[i],0)+1);
         }
-        this.size = j;
+
+        // removing stop words
+        TextProcesser.removeStopWord(this);
+        // performing stemming
+        TextProcesser.stemText(this);
     }
+
     public Set<String> getTerms(){
         return this.file.keySet();
     }
@@ -67,8 +73,8 @@ public class Document {
     public int getSize() {
         return this.size;
     }
-    public void setSize(int size){
-        this.size = size;
+    public void setSize(){
+        this.size = this.getFile().size();
     }
 
     public String getName() {
@@ -93,13 +99,9 @@ public class Document {
         return 0;
     }
 
-    public void doTextOperation(){
-        // performing stemming
-        TextProcesser.stemText(this);
-    }
     @Override
     public String toString() {
-        return "Document Name: %s ------------ Document size: %d  ".formatted(this.getName(),this.getSize());
+        return ("Document Name: "+"%"+(-20)+"s"+"%"+(-20)+"s  Document size: %d Unique terms  ").formatted(this.getName(),"------------",this.getSize());
     }
 
     public void clearTerms() {

@@ -13,31 +13,33 @@ import java.util.Set;
 import opennlp.tools.stemmer.PorterStemmer;
 
 public class TextProcesser {
-    private static PorterStemmer stemmer;
-    private static Set<String> stopwords;
+    private static PorterStemmer stemmer = new PorterStemmer();
+    private static Set<String> stopwords = new HashSet<>();
     private static BufferedReader reader;
+    private static final String StopWordPath = "src/main/java/com/firomsa/terrier-stop.txt";
 
+    // static initialization of stopword file on class loading
     static {
-        stemmer = new PorterStemmer();
-        stopwords = new HashSet<>();
-        File stopwordsfile = new File("src/main/java/com/firomsa/terrier-stop.txt");
+        File stopwordsfile = new File(StopWordPath);
         try {
             reader = new BufferedReader(new FileReader(stopwordsfile));
         } catch (FileNotFoundException e) {
-            System.out.println("ERROR OCCURED: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED WHILE LOADING STOP WORDS: >>>> "+e.getMessage());
         }
         try {
             // Reading stowords
+            System.out.println("READING STOP WORDS BEGAN ...");
             while(reader.ready()){
-                System.out.println("READING STOP WORDS ...");
                 String term = reader.readLine();
                 stopwords.add(term);
             }
+            System.out.println("READING STOP WORDS ENDED ...");
         } catch (IOException e) {
-            System.out.println("ERROR OCCURED: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED DURING READING STOP WORDS: >>>> "+e.getMessage());
         }
     }
 
+    // a method to perform stemming on terms, uses the Porte Stemming algorithm
     public static void stemText(Document doc){
         Set<String> terms = doc.getFile().keySet();
         System.out.println(">>>>>>>>>> PERFORMING STEMMING >>>>>>>>>");
@@ -48,15 +50,24 @@ public class TextProcesser {
             tempMap.put(key, value);
         }
 
-        doc.clearTerms(); // Assuming there's a method to clear all terms
+        doc.clearTerms(); 
         for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
             doc.addTerm(entry.getKey(), entry.getValue());
         }
     }
-    public static boolean isStopWord(String term){
-        if(stopwords.contains(term)){
-            return true;
+    public static void removeStopWord(Document document){
+        Set<String> terms = document.getFile().keySet();
+        System.out.println(">>>>>>>>>> PERFORMING STOP WORD REMOVAL >>>>>>>>>");
+        Map<String, Integer> tempMap = new HashMap<>();
+        for (String term : terms) {
+            if(!stopwords.contains(term)){
+                tempMap.put(term, document.getFile().get(term));
+            }
         }
-        return false;
+        document.clearTerms();
+        for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
+            document.addTerm(entry.getKey(), entry.getValue());
+        }
+        document.setSize();
     }
 }

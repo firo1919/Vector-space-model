@@ -6,13 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 public class TermWeightMatrix {
     private List<Document> documents;
     private int collectionNumber;
     private Map<String, Integer> terms;
     private Document target;
+
     public TermWeightMatrix(Document target,List<Document> documents){
 
         // documents from the corpus including target
@@ -28,7 +28,6 @@ public class TermWeightMatrix {
         // list of terms with document frequency
         terms = new LinkedHashMap<>();
         for (Document document : this.documents) {
-            document.doTextOperation();
             for (String term : document.getTerms()) {
                 terms.put(term, terms.getOrDefault(term, 0)+1);
             }
@@ -60,14 +59,12 @@ public class TermWeightMatrix {
             }
             docVector.put(item, tfIdf);
         }
-        System.out.println(docVector);
         // calculating the cosine similarity for each document
         Map<Document, Double> result = new HashMap<>();
         double targetMag = magnitude(docVector.get(target));
         List<Double> targetVector = docVector.get(target);
         for (Map.Entry<Document,List<Double>> document : docVector.entrySet()) {
             if(document.getKey() == this.target){
-                System.out.println("the target");
                 continue;
             }
             double docMag = magnitude(document.getValue());
