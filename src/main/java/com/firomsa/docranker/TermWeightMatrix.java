@@ -3,64 +3,93 @@ package com.firomsa.docranker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class TermWeightMatrix {
-    private Map<Document,List<Integer>> docVector;
+    private List<Document> documents;
     private int collectionNumber;
-    HashMap<String, Integer> terms;
+    private Map<String, Integer> terms;
     private Document target;
-    public TermWeightMatrix(Document target,Document ...documents){
-        docVector = new LinkedHashMap<>();
+    public TermWeightMatrix(Document target,List<Document> documents){
+
+        // documents from the corpus including target
+        this.documents = documents;
+
+        // the targeted query
+        this.target = target;
+        this.documents.add(target);
+
+        // total document number
+        this.collectionNumber = this.documents.size();
+
+        // list of terms with document frequency
         terms = new LinkedHashMap<>();
-        List<Document> docs = new ArrayList<>();
-        int i = 0;
-        for (Document document : documents) {
-            docs.add(document);
+        for (Document document : this.documents) {
+            document.doTextOperation();
             for (String term : document.getTerms()) {
                 terms.put(term, terms.getOrDefault(term, 0)+1);
             }
-            i++;
         }
-        docs.add(target);
-        for (String term : target.getTerms()) {
-            terms.put(term, terms.getOrDefault(term, 0)+1);
-        }
-        for (Document doc : docs) {
-            List<Integer> termfreqList = new ArrayList<>();
-            for (String term : terms.keySet()) {
-                int termFreq = doc.getTermFrequency(term);
-                termfreqList.add(termFreq);
-            }
-            docVector.put(doc, termfreqList);
-        }
-        this.target = target;
-        this.collectionNumber = i+1;
     }
 
-    public double calculateIDF(String term){
-        int numberOfAppearances =  terms.get(term);
-        return Math.log10(collectionNumber/numberOfAppearances);
+    // calculates the IDF() of a term 
+    private double calculateIDF(String term){
+        int documentFrequency =  terms.get(term);
+        return Math.log10(collectionNumber/documentFrequency);
     }
 
-    public double calculateTF_IDF(String term, Document doc){
+    // calculates the TF_IDF of a term give in a given document
+    private double calculateTF_IDF(String term, Document doc){
         double tfIdf = doc.getTermFrequency(term)*calculateIDF(term);
         return tfIdf;
     }
-    public ArrayList<Double> calculateSimilarity(){
 
+    //calculates the cosine similarity of each document with the target document
+    public Map<Document,Double> calculateCosineSimilarity(){
+        Map<Document, List<Double>> docVector = new HashMap<>();
+
+        // calculating the TFIDF for each term in a document
+        for (Document item : documents) {
+            List<Double> tfIdf = new ArrayList<>();
+            for (String term : terms.keySet()) {
+                double weight = calculateTF_IDF(term,item);
+                tfIdf.add(weight);
+            }
+            docVector.put(item, tfIdf);
+        }
+        System.out.println(docVector);
+        // calculating the cosine similarity for each document
+        Map<Document, Double> result = new LinkedHashMap<>();
+        double targetMag = magnitude(docVector.get(target));
+        List<Double> targetVector = docVector.get(target);
+        for (Map.Entry<Document,List<Double>> document : docVector.entrySet()) {
+            if(document.getKey() == this.target){
+                System.out.println("the target");
+                continue;
+            }
+            double docMag = magnitude(document.getValue());
+            double dotProduct = dotProduct(targetVector, document.getValue());
+            double answer = dotProduct/(targetMag*docMag);
+            result.put(document.getKey(), answer);
+        }
+        return result;
     }
 
-    public double cosineSimilarity(Document doc1, Document doc2){
-
+    private double magnitude(List<Double> list){
+        double result = 0;
+        for (Double elem : list) {
+            result += (elem*elem);
+        }
+        result = Math.sqrt(result);
+        return result;
     }
-    @Override
-    public String toString() {
-        return "TermWeightMatrix [termWithDocs=" + termWithDocs + "]";
+    private double dotProduct(List<Double> list1,List<Double> list2){
+        double result = 0;
+        for (int i = 0; i < list1.size(); i++) {
+            result += list1.get(i)*list2.get(i);
+        }
+        return result;
     }
     
 }

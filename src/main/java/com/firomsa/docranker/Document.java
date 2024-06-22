@@ -101,10 +101,8 @@ public class Document {
     public String toString() {
         return """
         Document Name: %s
-        Document size: %d
-        >>>>>>>>>>>>>>  Terms   >>>>>>>>>>>>>>
-        %s   
-        """.formatted(this.getName(),this.getSize(),this.file);
+        Document size: %d  
+        """.formatted(this.getName(),this.getSize());
     }
 
     public void clearTerms() {
