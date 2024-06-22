@@ -3,8 +3,10 @@ package com.firomsa.docranker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 public class TermWeightMatrix {
     private List<Document> documents;
@@ -36,13 +38,13 @@ public class TermWeightMatrix {
     // calculates the IDF() of a term 
     private double calculateIDF(String term){
         int documentFrequency =  terms.get(term);
-        return Math.log10(collectionNumber/documentFrequency);
+        return Math.round((Math.log10(collectionNumber/documentFrequency))*1000.0)/1000.0;
     }
 
     // calculates the TF_IDF of a term give in a given document
     private double calculateTF_IDF(String term, Document doc){
         double tfIdf = doc.getTermFrequency(term)*calculateIDF(term);
-        return tfIdf;
+        return Math.round(tfIdf*1000.0)/1000.0;
     }
 
     //calculates the cosine similarity of each document with the target document
@@ -60,7 +62,7 @@ public class TermWeightMatrix {
         }
         System.out.println(docVector);
         // calculating the cosine similarity for each document
-        Map<Document, Double> result = new LinkedHashMap<>();
+        Map<Document, Double> result = new HashMap<>();
         double targetMag = magnitude(docVector.get(target));
         List<Double> targetVector = docVector.get(target);
         for (Map.Entry<Document,List<Double>> document : docVector.entrySet()) {
@@ -70,10 +72,16 @@ public class TermWeightMatrix {
             }
             double docMag = magnitude(document.getValue());
             double dotProduct = dotProduct(targetVector, document.getValue());
-            double answer = dotProduct/(targetMag*docMag);
+            double answer = Math.round((dotProduct/(targetMag*docMag))*1000.0)/1000.0;
             result.put(document.getKey(), answer);
         }
-        return result;
+        List<Map.Entry<Document,Double>> l = new LinkedList<>(result.entrySet());
+        l.sort((a,b)->(b.getValue().compareTo(a.getValue())));
+        Map<Document, Double> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<Document, Double> entry : l) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedMap;
     }
 
     private double magnitude(List<Double> list){
@@ -81,7 +89,7 @@ public class TermWeightMatrix {
         for (Double elem : list) {
             result += (elem*elem);
         }
-        result = Math.sqrt(result);
+        result = Math.round((Math.sqrt(result))*1000.0)/1000.0;
         return result;
     }
     private double dotProduct(List<Double> list1,List<Double> list2){
@@ -89,7 +97,7 @@ public class TermWeightMatrix {
         for (int i = 0; i < list1.size(); i++) {
             result += list1.get(i)*list2.get(i);
         }
-        return result;
+        return Math.round((result*1000.0))/1000.0;
     }
     
 }

@@ -99,10 +99,7 @@ public class Document {
     }
     @Override
     public String toString() {
-        return """
-        Document Name: %s
-        Document size: %d  
-        """.formatted(this.getName(),this.getSize());
+        return "Document Name: %s ------------ Document size: %d  ".formatted(this.getName(),this.getSize());
     }
 
     public void clearTerms() {
