@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Document {
     private Map<String, Integer> file;
@@ -49,13 +50,19 @@ public class Document {
         this.name = "The Query";
         this.file = new HashMap<>();  
         String[] terms = text.split(" ");
-        this.size = terms.length;
+        int j = 0;
         for (int i = 0; i < terms.length; i++) {
-            terms[i].toLowerCase();
-            file.put(terms[i], file.getOrDefault(terms[i],0)+1);
+            terms[i] = terms[i].toLowerCase();
+            if(!TextProcesser.isStopWord(terms[i])){
+                file.put(terms[i], file.getOrDefault(terms[i],0)+1);
+                j++;
+            }
         }
+        this.size = j;
     }
-    
+    public Set<String> getTerms(){
+        return this.file.keySet();
+    }
     
     public int getSize() {
         return this.size;
