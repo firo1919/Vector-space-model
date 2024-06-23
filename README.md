@@ -37,3 +37,5 @@ java -jar target/*.jar ~/Downloads/AI.txt ~/Downloads/Renewable.txt ~/Downloads/
 ```
 
 In this example, the program will rank the files `AI.txt`, `Renewable.txt`, `opensource.txt`, and `mentalhealth.txt` based on the relevance to the query "artificial intelligence and machine learning" and outputs it to the console.
+
+![Vector Space Model Diagram](preview.png)
