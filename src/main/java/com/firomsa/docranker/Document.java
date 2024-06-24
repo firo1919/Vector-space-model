@@ -57,10 +57,10 @@ public class Document {
         for (int i = 0; i < terms.length; i++) {
             terms[i] = terms[i].toLowerCase();
             // removing anwanted symbols using regular expressions
-            term[i] = term[i].replaceAll("[.\",:)(/\\?!&;]", "");
+            terms[i] = terms[i].replaceAll("[.\",:)(/\\?!&;]", "");
             terms[i] = terms[i].trim();
-            if (!term.isEmpty()) {
-                file.put(term[i], file.getOrDefault(term[i], 0) + 1);
+            if (!terms[i].isEmpty()) {
+                file.put(terms[i], file.getOrDefault(terms[i], 0) + 1);
             }
         }
 
