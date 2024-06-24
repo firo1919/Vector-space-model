@@ -24,43 +24,44 @@ public class TextProcesser {
         try {
             reader = new BufferedReader(new FileReader(stopwordsfile));
         } catch (FileNotFoundException e) {
-            System.out.println("ERROR OCCURED WHILE LOADING STOP WORDS: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED WHILE LOADING STOP WORDS: >>>> " + e.getMessage());
         }
         try {
             // Reading stowords
             System.out.println("READING STOP WORDS BEGAN ...");
-            while(reader.ready()){
+            while (reader.ready()) {
                 String term = reader.readLine();
                 stopwords.add(term);
             }
             System.out.println("READING STOP WORDS ENDED ...");
         } catch (IOException e) {
-            System.out.println("ERROR OCCURED DURING READING STOP WORDS: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED DURING READING STOP WORDS: >>>> " + e.getMessage());
         }
     }
 
     // a method to perform stemming on terms, uses the Porte Stemming algorithm
-    public static void stemText(Document doc){
-        Set<String> terms = doc.getFile().keySet();
-        System.out.println(">>>>>>>>>> PERFORMING STEMMING >>>>>>>>>");
+    public static void stemText(Document document) {
+        Set<String> terms = document.getFile().keySet();
+        System.out.println(">>>>>>>>>> PERFORMING STEMMING - " + document.getName());
         Map<String, Integer> tempMap = new HashMap<>();
         for (String term : terms) {
-            int value = doc.getFile().get(term);
+            int value = document.getFile().get(term);
             String key = stemmer.stem(term);
             tempMap.put(key, value);
         }
 
-        doc.clearTerms(); 
+        document.clearTerms();
         for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
-            doc.addTerm(entry.getKey(), entry.getValue());
+            document.addTerm(entry.getKey(), entry.getValue());
         }
     }
-    public static void removeStopWord(Document document){
+
+    public static void removeStopWord(Document document) {
         Set<String> terms = document.getFile().keySet();
-        System.out.println(">>>>>>>>>> PERFORMING STOP WORD REMOVAL >>>>>>>>>");
+        System.out.println(">>>>>>>>>> PERFORMING STOP WORD REMOVAL - " + document.getName());
         Map<String, Integer> tempMap = new HashMap<>();
         for (String term : terms) {
-            if(!stopwords.contains(term)){
+            if (!stopwords.contains(term)) {
                 tempMap.put(term, document.getFile().get(term));
             }
         }

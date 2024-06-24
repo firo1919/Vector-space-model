@@ -21,43 +21,44 @@ public class Document {
         try {
             reader = new BufferedReader(new FileReader(text));
         } catch (FileNotFoundException e) {
-            System.out.println("ERROR OCCURED WHILE READING FILE: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED WHILE READING FILE: >>>> " + e.getMessage());
         }
         try {
             // Performing word tokenization with frequency of terms
             System.out.println("READING FILE BEGAN...");
-            while(reader.ready()){
+            while (reader.ready()) {
                 String[] terms = reader.readLine().split(" ");
                 for (String term : terms) {
                     term = term.toLowerCase();
-                    term = term.replace('.', ' ');
+                    // removing anwanted symbols using regular expressions
+                    term = term.replaceAll("[.\",:)(/\\?!&;]", "");
                     term = term.trim();
-                    if(!term.isEmpty()){
-                        file.put(term, file.getOrDefault(term,0)+1);
+                    if (!term.isEmpty()) {
+                        file.put(term, file.getOrDefault(term, 0) + 1);
                     }
                 }
             }
             System.out.println("READING FILE ENDED ...");
 
         } catch (IOException e) {
-            System.out.println("ERROR OCCURED DURING READING FILES: >>>> "+e.getMessage());
+            System.out.println("ERROR OCCURED DURING READING FILES: >>>> " + e.getMessage());
         }
-        
-        //Removing stop words
+
+        // Removing stop words
         TextProcesser.removeStopWord(this);
         // performing stemming
         TextProcesser.stemText(this);
     }
-    
+
     public Document(String text) {
         this.name = "The Query";
         String[] terms = text.split(" ");
-        
+
         for (int i = 0; i < terms.length; i++) {
             terms[i] = terms[i].toLowerCase();
             terms[i] = terms[i].replace('.', ' ');
             terms[i] = terms[i].trim();
-            file.put(terms[i], file.getOrDefault(terms[i],0)+1);
+            file.put(terms[i], file.getOrDefault(terms[i], 0) + 1);
         }
 
         // removing stop words
@@ -66,34 +67,36 @@ public class Document {
         TextProcesser.stemText(this);
     }
 
-    public Set<String> getTerms(){
+    public Set<String> getTerms() {
         return this.file.keySet();
     }
-    
+
     public int getSize() {
         return this.size;
     }
-    public void setSize(){
+
+    public void setSize() {
         this.size = this.getFile().size();
     }
 
     public String getName() {
         return name;
     }
-    
+
     public Map<String, Integer> getFile() {
         return file;
     }
-    public void removeTerm(String key){
+
+    public void removeTerm(String key) {
         this.file.remove(key);
     }
 
-    public void addTerm(String key, int value){
+    public void addTerm(String key, int value) {
         this.file.put(key, this.file.getOrDefault(key, 1));
     }
 
-    public int getTermFrequency(String term){
-        if(file.get(term)!=null){
+    public int getTermFrequency(String term) {
+        if (file.get(term) != null) {
             return file.get(term);
         }
         return 0;
@@ -101,14 +104,12 @@ public class Document {
 
     @Override
     public String toString() {
-        return ("Document Name: "+"%"+(-20)+"s"+"%"+(-20)+"s  Document size: %d Unique terms  ").formatted(this.getName(),"------------",this.getSize());
+        return ("Document Name: " + "%" + (-20) + "s" + "%" + (-20) + "s  Document size: %d Unique terms  ")
+                .formatted(this.getName(), "------------", this.getSize());
     }
 
     public void clearTerms() {
         this.file.clear();
     }
-    
-    
-    
 
 }

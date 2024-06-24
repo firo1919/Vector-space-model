@@ -25,7 +25,7 @@ public class TermWeightMatrix {
         // total document number
         this.collectionNumber = this.documents.size();
 
-        // list of terms with document frequency
+        // map of terms with document frequency
         terms = new LinkedHashMap<>();
         for (Document document : this.documents) {
             for (String term : document.getTerms()) {
@@ -37,13 +37,15 @@ public class TermWeightMatrix {
     // calculates the IDF() of a term 
     private double calculateIDF(String term){
         int documentFrequency =  terms.get(term);
-        return Math.round((Math.log10(collectionNumber/documentFrequency))*1000.0)/1000.0;
+        // we add 1 to the IDF after logarithmic calculation to give it a lower bound to avoid 
+        // zero weight just because a word appears in every document
+        return Math.round((Math.log10(collectionNumber/documentFrequency)+1)*10000.0)/10000.0;
     }
 
-    // calculates the TF_IDF of a term give in a given document
+    // calculates the TF_IDF of a term in a given document
     private double calculateTF_IDF(String term, Document doc){
         double tfIdf = doc.getTermFrequency(term)*calculateIDF(term);
-        return Math.round(tfIdf*1000.0)/1000.0;
+        return Math.round(tfIdf*10000.0)/10000.0;
     }
 
     //calculates the cosine similarity of each document with the target document
@@ -69,7 +71,7 @@ public class TermWeightMatrix {
             }
             double docMag = magnitude(document.getValue());
             double dotProduct = dotProduct(targetVector, document.getValue());
-            double answer = Math.round((dotProduct/(targetMag*docMag))*1000.0)/1000.0;
+            double answer = Math.round((dotProduct/(targetMag*docMag))*10000.0)/10000.0;
             result.put(document.getKey(), answer);
         }
         List<Map.Entry<Document,Double>> l = new LinkedList<>(result.entrySet());

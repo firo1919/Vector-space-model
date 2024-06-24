@@ -46,6 +46,7 @@ public class VectorSpaceModel extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        // user interface not implemented yet
     }
 
     public static void main(String[] args) {
@@ -53,12 +54,13 @@ public class VectorSpaceModel extends JFrame {
             new VectorSpaceModel();
         } else {
             ArrayList<String> inputs = new ArrayList<>(Arrays.asList(args));
-            if((!inputs.contains("-t"))||(inputs.indexOf("-t")!=inputs.indexOf(inputs.getLast())-1)||(inputs.indexOf("-t")==0)){
+            if ((!inputs.contains("-t")) || (inputs.indexOf("-t") != inputs.indexOf(inputs.getLast()) - 1)
+                    || (inputs.indexOf("-t") == 0)) {
                 System.out.println(">>>>>> WRONG SYNTAX >>>>>>>>");
                 return;
             }
             for (String input : inputs) {
-                if(input.equals("-t")){
+                if (input.equals("-t")) {
                     target = new Document(inputs.getLast());
                     break;
                 }
@@ -67,11 +69,14 @@ public class VectorSpaceModel extends JFrame {
             termWeightMatrix = new TermWeightMatrix(target, documents);
             Map<Document, Double> result = termWeightMatrix.calculateCosineSimilarity();
             System.out.println();
+            System.out.println("Query Terms : " + target.getTerms());
+            System.out.println(
+                    ("%" + (-20) + "s" + "%" + (-20) + "s" + "%s").formatted("Document Name", "Document Size", "Rank"));
             for (Map.Entry<Document, Double> e : result.entrySet()) {
-                System.out.println(e);
+                System.out.println(("%" + (-20) + "s" + "%d Unique terms  " + "%f").formatted(e.getKey().getName(),
+                        e.getKey().getSize(), e.getValue()));
             }
         }
 
     }
-
 }
