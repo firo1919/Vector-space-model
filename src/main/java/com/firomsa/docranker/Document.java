@@ -56,9 +56,12 @@ public class Document {
 
         for (int i = 0; i < terms.length; i++) {
             terms[i] = terms[i].toLowerCase();
-            terms[i] = terms[i].replace('.', ' ');
+            // removing anwanted symbols using regular expressions
+            term[i] = term[i].replaceAll("[.\",:)(/\\?!&;]", "");
             terms[i] = terms[i].trim();
-            file.put(terms[i], file.getOrDefault(terms[i], 0) + 1);
+            if (!term.isEmpty()) {
+                file.put(term[i], file.getOrDefault(term[i], 0) + 1);
+            }
         }
 
         // removing stop words
