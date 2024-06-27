@@ -14,6 +14,16 @@ public class Document {
     private String name;
     private BufferedReader reader;
 
+    public Document(String text) {
+        this.name = "The Query";
+        String[] terms = text.split(" ");
+
+        TextProcessor.tokenizeTerms(terms, this);
+        TextProcessor.removeStopWord(this);
+        TextProcessor.stemText(this);
+    }
+
+
     public Document(File text) {
         this.name = text.getName();
 
@@ -38,15 +48,6 @@ public class Document {
         TextProcessor.stemText(this);
     }
 
-    public Document(String text) {
-        this.name = "The Query";
-        String[] terms = text.split(" ");
-
-        TextProcessor.tokenizeTerms(terms, this);
-        TextProcessor.removeStopWord(this);
-        TextProcessor.stemText(this);
-    }
-
     public Set<String> getTerms() {
         return this.file.keySet();
     }
@@ -64,7 +65,7 @@ public class Document {
     }
 
     public void addTerm(String term) {
-        this.file.put(term, this.file.getOrDefault(term, 1));
+        this.file.put(term, this.file.getOrDefault(term, 0)+1);
     }
 
     public void replaceDocument(Map<String, Integer> newFile) {

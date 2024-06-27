@@ -49,19 +49,19 @@ public class TermWeightMatrix {
 
     // calculates the cosine similarity of each document with the target document
     public Map<Document, Double> calculateCosineSimilarity() {
-        Map<Document, List<Double>> docVector = generateDocumentVector();
+        Map<Document, List<Double>> docVectors = generateDocumentVector();
         Map<Document, Double> result = new HashMap<>();
-        double targetMag = magnitude(docVector.get(target));
-        List<Double> targetVector = docVector.get(target);
+        double targetMag = magnitude(docVectors.get(target));
+        List<Double> targetVector = docVectors.get(target);
 
-        for (Map.Entry<Document, List<Double>> document : docVector.entrySet()) {
-            if (document.getKey() == this.target) {
+        for (Map.Entry<Document, List<Double>> docvector : docVectors.entrySet()) {
+            if (docvector.getKey() == this.target) {
                 continue;
             }
-            double docMag = magnitude(document.getValue());
-            double dotProduct = dotProduct(targetVector, document.getValue());
+            double docMag = magnitude(docvector.getValue());
+            double dotProduct = dotProduct(targetVector, docvector.getValue());
             double answer = Math.round((dotProduct / (targetMag * docMag)) * 10000.0) / 10000.0;
-            result.put(document.getKey(), answer);
+            result.put(docvector.getKey(), answer);
         }
         // Sorting the result in descending order
         List<Map.Entry<Document, Double>> l = new LinkedList<>(result.entrySet());
