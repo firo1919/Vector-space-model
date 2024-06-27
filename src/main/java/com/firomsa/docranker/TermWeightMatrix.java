@@ -49,9 +49,7 @@ public class TermWeightMatrix {
 
     // calculates the cosine similarity of each document with the target document
     public Map<Document, Double> calculateCosineSimilarity() {
-        // calculating the TFIDF for each term in a document
         Map<Document, List<Double>> docVector = generateDocumentVector();
-        // calculating the cosine similarity for each document
         Map<Document, Double> result = new HashMap<>();
         double targetMag = magnitude(docVector.get(target));
         List<Double> targetVector = docVector.get(target);
@@ -65,7 +63,7 @@ public class TermWeightMatrix {
             double answer = Math.round((dotProduct / (targetMag * docMag)) * 10000.0) / 10000.0;
             result.put(document.getKey(), answer);
         }
-        // Sorting the resulting descending
+        // Sorting the result in descending order
         List<Map.Entry<Document, Double>> l = new LinkedList<>(result.entrySet());
         l.sort((a, b) -> (b.getValue().compareTo(a.getValue())));
         Map<Document, Double> sortedMap = new LinkedHashMap<>();
@@ -75,6 +73,7 @@ public class TermWeightMatrix {
         return sortedMap;
     }
 
+    // calculating the TFIDF for each term in a document
     private Map<Document, List<Double>> generateDocumentVector() {
         Map<Document, List<Double>> docVector = new HashMap<>();
         for (Document document : documents) {

@@ -23,7 +23,6 @@ public class Document {
             System.out.println("ERROR OCCURED WHILE READING FILE: >>>> " + e.getMessage());
         }
         try {
-            // Performing word tokenization with frequency of terms
             System.out.println("READING FILE BEGAN...");
             while (reader.ready()) {
                 String[] terms = reader.readLine().split(" ");
@@ -35,9 +34,7 @@ public class Document {
             System.out.println("ERROR OCCURED DURING READING FILES: >>>> " + e.getMessage());
         }
 
-        // Removing stop words
         TextProcessor.removeStopWord(this);
-        // performing stemming
         TextProcessor.stemText(this);
     }
 
@@ -45,11 +42,8 @@ public class Document {
         this.name = "The Query";
         String[] terms = text.split(" ");
 
-        // Performing word tokenization with frequency of terms processor
         TextProcessor.tokenizeTerms(terms, this);
-        // removing stop words
         TextProcessor.removeStopWord(this);
-        // performing stemming
         TextProcessor.stemText(this);
     }
 
