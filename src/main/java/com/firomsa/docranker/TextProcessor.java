@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,20 +14,17 @@ import java.util.Set;
 
 import opennlp.tools.stemmer.PorterStemmer;
 
-public class TextProcesser {
+public class TextProcessor {
+    private static InputStream stopwordStream = TextProcessor.class.getClassLoader()
+                                                                  .getResourceAsStream("terrier-stop.txt");
+                                                                  
     private static PorterStemmer stemmer = new PorterStemmer();
     private static Set<String> stopwords = new HashSet<>();
     private static BufferedReader reader;
-    private static final String StopWordPath = "src/main/java/com/firomsa/terrier-stop.txt";
-
+   
     // static initialization of stopword file on class loading
     static {
-        File stopwordsfile = new File(StopWordPath);
-        try {
-            reader = new BufferedReader(new FileReader(stopwordsfile));
-        } catch (FileNotFoundException e) {
-            System.out.println("ERROR OCCURED WHILE LOADING STOP WORDS: >>>> " + e.getMessage());
-        }
+        reader = new BufferedReader(new InputStreamReader(stopwordStream));
         try {
             // Reading stowords
             System.out.println("READING STOP WORDS BEGAN ...");
@@ -49,11 +48,7 @@ public class TextProcesser {
             String key = stemmer.stem(term);
             tempMap.put(key, value);
         }
-
-        document.clearTerms();
-        for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
-            document.addTerm(entry.getKey(), entry.getValue());
-        }
+        document.replaceDocument(tempMap);
     }
 
     public static void removeStopWord(Document document) {
@@ -65,10 +60,18 @@ public class TextProcesser {
                 tempMap.put(term, document.getFile().get(term));
             }
         }
-        document.clearTerms();
-        for (Map.Entry<String, Integer> entry : tempMap.entrySet()) {
-            document.addTerm(entry.getKey(), entry.getValue());
+        document.replaceDocument(tempMap);
+    }
+
+    public static void tokenizeTerms(String[] terms, Document document) {
+        for (String term : terms) {
+            term = term.toLowerCase();
+            // removing anwanted symbols using regular expressions
+            term = term.replaceAll("[.\",:)(/\\?!&;]", "");
+            term = term.trim();
+            if (!term.isEmpty()) {
+                document.addTerm(term);
+            }
         }
-        document.setSize();
     }
 }

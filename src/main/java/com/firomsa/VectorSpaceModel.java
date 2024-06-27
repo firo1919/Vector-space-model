@@ -54,14 +54,17 @@ public class VectorSpaceModel extends JFrame {
             new VectorSpaceModel();
         } else {
             ArrayList<String> inputs = new ArrayList<>(Arrays.asList(args));
-            if ((!inputs.contains("-t")) || (inputs.indexOf("-t") != inputs.indexOf(inputs.getLast()) - 1)
-                    || (inputs.indexOf("-t") == 0)) {
+            if (!containsOption(inputs)) {
                 System.out.println(">>>>>> WRONG SYNTAX >>>>>>>>");
                 return;
             }
             for (String input : inputs) {
-                if (input.equals("-t")) {
+                if (input.equals("-q")) {
                     target = new Document(inputs.getLast());
+                    break;
+                }
+                else if(input.equals("-f")){
+                    target = new Document(new File(inputs.getLast()));
                     break;
                 }
                 documents.add(new Document(new File(input)));
@@ -70,6 +73,7 @@ public class VectorSpaceModel extends JFrame {
             Map<Document, Double> result = termWeightMatrix.calculateCosineSimilarity();
             System.out.println();
             System.out.println("Query Terms : " + target.getTerms());
+            System.out.println();
             System.out.println(
                     ("%" + (-20) + "s" + "%" + (-20) + "s" + "%s").formatted("Document Name", "Document Size", "Rank"));
             for (Map.Entry<Document, Double> e : result.entrySet()) {
@@ -78,5 +82,19 @@ public class VectorSpaceModel extends JFrame {
             }
         }
 
+    }
+
+    private static boolean containsOption(ArrayList<String> inputs) {
+        ArrayList<String> options = new ArrayList<>(Arrays.asList("-f","-q"));
+        for (String option : inputs) {
+            if(!options.contains(option)||(inputs.indexOf(option) != inputs.indexOf(inputs.getLast()) - 1)
+            || (inputs.indexOf(option) == 0)){
+                continue;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
     }
 }

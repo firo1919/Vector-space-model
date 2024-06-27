@@ -11,7 +11,6 @@ import java.util.Set;
 
 public class Document {
     private Map<String, Integer> file = new HashMap<>();
-    private int size;
     private String name;
     private BufferedReader reader;
 
@@ -28,15 +27,7 @@ public class Document {
             System.out.println("READING FILE BEGAN...");
             while (reader.ready()) {
                 String[] terms = reader.readLine().split(" ");
-                for (String term : terms) {
-                    term = term.toLowerCase();
-                    // removing anwanted symbols using regular expressions
-                    term = term.replaceAll("[.\",:)(/\\?!&;]", "");
-                    term = term.trim();
-                    if (!term.isEmpty()) {
-                        file.put(term, file.getOrDefault(term, 0) + 1);
-                    }
-                }
+                TextProcessor.tokenizeTerms(terms, this);
             }
             System.out.println("READING FILE ENDED ...");
 
@@ -45,29 +36,21 @@ public class Document {
         }
 
         // Removing stop words
-        TextProcesser.removeStopWord(this);
+        TextProcessor.removeStopWord(this);
         // performing stemming
-        TextProcesser.stemText(this);
+        TextProcessor.stemText(this);
     }
 
     public Document(String text) {
         this.name = "The Query";
         String[] terms = text.split(" ");
 
-        for (int i = 0; i < terms.length; i++) {
-            terms[i] = terms[i].toLowerCase();
-            // removing anwanted symbols using regular expressions
-            terms[i] = terms[i].replaceAll("[.\",:)(/\\?!&;]", "");
-            terms[i] = terms[i].trim();
-            if (!terms[i].isEmpty()) {
-                file.put(terms[i], file.getOrDefault(terms[i], 0) + 1);
-            }
-        }
-
+        // Performing word tokenization with frequency of terms processor
+        TextProcessor.tokenizeTerms(terms, this);
         // removing stop words
-        TextProcesser.removeStopWord(this);
+        TextProcessor.removeStopWord(this);
         // performing stemming
-        TextProcesser.stemText(this);
+        TextProcessor.stemText(this);
     }
 
     public Set<String> getTerms() {
@@ -75,11 +58,7 @@ public class Document {
     }
 
     public int getSize() {
-        return this.size;
-    }
-
-    public void setSize() {
-        this.size = this.getFile().size();
+        return this.getFile().size();
     }
 
     public String getName() {
@@ -90,12 +69,15 @@ public class Document {
         return file;
     }
 
-    public void removeTerm(String key) {
-        this.file.remove(key);
+    public void addTerm(String term) {
+        this.file.put(term, this.file.getOrDefault(term, 1));
     }
 
-    public void addTerm(String key, int value) {
-        this.file.put(key, this.file.getOrDefault(key, 1));
+    public void replaceDocument(Map<String, Integer> newFile) {
+        this.file.clear();
+        for (Map.Entry<String, Integer> entry : newFile.entrySet()) {
+            this.file.put(entry.getKey(), entry.getValue());
+        }
     }
 
     public int getTermFrequency(String term) {
@@ -109,10 +91,6 @@ public class Document {
     public String toString() {
         return ("Document Name: " + "%" + (-20) + "s" + "%" + (-20) + "s  Document size: %d Unique terms  ")
                 .formatted(this.getName(), "------------", this.getSize());
-    }
-
-    public void clearTerms() {
-        this.file.clear();
     }
 
 }
