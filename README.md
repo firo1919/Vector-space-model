@@ -19,13 +19,18 @@ This project is a vector space model implementation in Java that ranks given fil
 
 ## Usage
 To run the project, use the following command while being inside the directory:
+- **If search term is typed manually**
 ```bash
-java -jar target/*.jar <file1> <file2> <file3> ... -t "<query>"
+java -jar target/*.jar <file1> <file2> <file3> ... -q "<query>"
+```
+- **If search term is from file**
+```bash
+java -jar target/*.jar <file1> <file2> <file3> ... -f "<file>"
 ```
 
 ### Example
 ```bash
-java -jar target/*.jar ~/Downloads/AI.txt ~/Downloads/Renewable.txt ~/Downloads/opensource.txt ~/Downloads/mentalhealth.txt -t "artificial intelligence and machine learning"
+java -jar target/*.jar ~/Downloads/AI.txt ~/Downloads/Renewable.txt ~/Downloads/opensource.txt ~/Downloads/mentalhealth.txt -q "artificial intelligence and machine learning"
 ```
 
 In this example, the program will rank the files `AI.txt`, `Renewable.txt`, `opensource.txt`, and `mentalhealth.txt` high to low similarity score,
