@@ -86,8 +86,9 @@ public class VectorSpaceModel extends JFrame {
 
     private static boolean containsOption(ArrayList<String> inputs) {
         ArrayList<String> options = new ArrayList<>(Arrays.asList("-f","-q"));
+        System.out.println(inputs);
         for (String option : inputs) {
-            if(!options.contains(option)||(inputs.indexOf(option) != inputs.indexOf(inputs.getLast()) - 1)
+            if(!options.contains(option)||(inputs.indexOf(option) != (inputs.size()-2))
             || (inputs.indexOf(option) == 0)){
                 continue;
             }
